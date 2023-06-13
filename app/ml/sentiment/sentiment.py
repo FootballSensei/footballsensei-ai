@@ -1,6 +1,5 @@
 
-from app.ml.sentiment import secrets 
-from app.ml.sentiment import constants
+from app.ml.sentiment.constants import *
 
 import praw
 from textblob import TextBlob # import textblob
@@ -9,13 +8,13 @@ from rank_bm25 import BM25Okapi # import BM25
 import time, datetime
 
 class SentimentAnalysis:
-    def __init__(self, team1_name, team2_name, team1_players, team2_players, date_since, date_until):
+    def __init__(self, team1_name, team2_name, team1_players, team2_players, date_since, date_until, reddit, analysis_type):
         self.team1_name = team1_name
         self.team2_name = team2_name
         self.team1_players = team1_players
         self.team2_players = team2_players
-        self.time_since = time.mktime(datetime.datetime.strptime(date_since, "%Y-%m-%d").timetuple())
-        self.time_until = time.mktime(datetime.datetime.strptime(date_until, "%Y-%m-%d").timetuple())
+        self.time_since = time.mktime(date_since.timetuple())
+        self.time_until = time.mktime(date_until.timetuple())
         self.team1_player_sentiment = []
         self.team2_player_sentiment = []
         self.team1_player_comments = []
@@ -26,10 +25,11 @@ class SentimentAnalysis:
         self.team2_positive_results = None
         self.team1_negative_results = None
         self.team2_negative_results = None
-        self.__reddit = praw.Reddit(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, user_agent=USER_AGENT)
+        self.__reddit = reddit
         self.__basic_analysis_team(1)
         self.__basic_analysis_team(2)
-        self.__advanced_analysis()
+        if analysis_type != 'basic':
+            self.__advanced_analysis()
 
     def get_team_sentiment(self, team_number):
         if team_number == 1:

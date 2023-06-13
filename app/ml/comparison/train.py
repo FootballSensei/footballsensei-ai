@@ -1,7 +1,7 @@
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
-from sklearn.preprocessing import LabelEncoder
 from xgboost import XGBClassifier
+from constants import CLASSES
 from joblib import dump 
 import pandas as pd 
 import numpy as np 
@@ -32,7 +32,7 @@ win_rate = (float(n_homewins) / (n_matches)) * 100
 
 # Separate into feature set and target variable
 #FTR = Full Time Result (H=Home Win, D=Draw, A=Away Win)
-X_all = dataset2.drop(['FTR', 'Unnamed 0'],1)
+X_all = dataset2.copy().drop(columns = ['FTR', 'Unnamed: 0'])
 y_all = dataset2['FTR']
 
 # Standardising the data.
@@ -59,7 +59,7 @@ def preprocess_features(X):
     output = pd.DataFrame(index = X.index)
 
     # Investigate each feature column for the data
-    for col, col_data in X.iteritems():
+    for col, col_data in X.items():
 
         # If data type is categorical, convert to dummy variables
         if col_data.dtype == object:
@@ -79,14 +79,14 @@ X_train, X_test, y_train, y_test = train_test_split(X_all, y_all,
                                                     random_state = 2,
                                                     stratify = y_all)
 
-le = LabelEncoder()
-y_train = le.fit_transform(y_train)
+y_train = [CLASSES.index(y) for y in y_train]
+y_test = [CLASSES.index(y) for y in y_test]
 
 classifier = XGBClassifier(objective='binary:logistic', n_estimators=20, learning_rate=0.1, max_depth=5, subsample = 0.9, colsample_bytree = 0.9, gamma = 1)
 classifier.fit(X_train, y_train)
 
 Y_pred = classifier.predict(X_test)
-cm = confusion_matrix(le.fit_transform(y_test), Y_pred)
+cm = confusion_matrix(y_test, Y_pred)
 
 true_positive = cm[0][0]
 false_positive = cm[1][0]
@@ -99,5 +99,3 @@ print("Accuracy: ", accuracy)
 
 output_filename = sys.argv[1]
 dump(classifier, output_filename)
-
-np.save(sys.argv[2], le.classes_)

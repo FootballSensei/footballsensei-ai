@@ -1,0 +1,1 @@
+CLASSES = ['H', 'NH']

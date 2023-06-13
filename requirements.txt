@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+pydantic
+pytest
+scikit-learn
+xgboost
+pandas
+joblib
+numpy
+praw
+textblob
+rank_bm25
