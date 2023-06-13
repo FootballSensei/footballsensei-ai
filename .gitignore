@@ -1,2 +1,4 @@
 .DS_Store
 training/
+__pycache__/
+*.joblib
