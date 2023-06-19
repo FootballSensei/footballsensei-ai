@@ -1,0 +1,24 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Create directory
+      run: mkdir app/ml/comparison/training
+    - name: Download dataset
+      run: wget https://footballsensei.blob.core.windows.net/training/final_dataset.csv -P app/ml/comparison/training/
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s) --target test
+     
