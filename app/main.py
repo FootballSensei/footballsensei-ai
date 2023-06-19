@@ -1,6 +1,10 @@
 
 from fastapi import FastAPI 
-from app.infra.service import router 
+
+try: 
+    from app.infra.service import router 
+except ModuleNotFoundError:
+    from infra.service import router
 
 app = FastAPI(openapi_url="/api/openapi.json", docs_url="/api/docs")
 

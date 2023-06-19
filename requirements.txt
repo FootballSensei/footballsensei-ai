@@ -10,3 +10,5 @@ numpy
 praw
 textblob
 rank_bm25
+pytest 
+httpx
